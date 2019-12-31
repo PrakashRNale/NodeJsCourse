@@ -48,9 +48,9 @@ const routeHandler = (req , res) =>{
 // module.exports.someText = "This is hardcoded value";
 
 // exports.handler = routeHandler;
-// exports.someText = "This is hardcoded value";
+// exports.someText = "This is hardcoded value";  //command
 
-module.exports = {
+module.exports = {  
     handler : routeHandler,
     someText : "This is hardcoded value"
 }
