@@ -44,6 +44,12 @@ const routeHandler = (req , res) =>{
     res.write('</html>');
 }
 
+// module.exports.handler = routeHandler;
+// module.exports.someText = "This is hardcoded value";
+
+// exports.handler = routeHandler;
+// exports.someText = "This is hardcoded value";
+
 module.exports = {
     handler : routeHandler,
     someText : "This is hardcoded value"
