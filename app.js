@@ -29,10 +29,10 @@ app.use('/addUsers',(req , res , next) => {
 });
 
 app.use('/users',(req , res , next) => {
-    console.log(req.body);
+    console.log(req.body); // We dont need to parse body using events. 
     let newUser = req.body.user;
     fs.writeFile('user.txt', newUser , error=>{
-        res.redirect('/');
+        res.redirect('/'); // status code will be automatically get attched to it
     });
     
 });
