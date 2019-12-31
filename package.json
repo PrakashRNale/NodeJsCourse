@@ -1,0 +1,21 @@
+{
+  "name": "nodejs-course",
+  "version": "1.0.0",
+  "description": "This is complete node js course",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js", 
+    "start-server" : "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PrakashRNale/NodeJsCourse.git"
+  },
+  "author": "Prakash Nale",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PrakashRNale/NodeJsCourse/issues"
+  },
+  "homepage": "https://github.com/PrakashRNale/NodeJsCourse#readme"
+}
