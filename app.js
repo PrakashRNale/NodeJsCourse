@@ -21,15 +21,21 @@ const server = http.createServer((req , res) => {
         })
 
         // end event will get executed when all incoming data has received on server
-        req.on('end', () =>{
+        return req.on('end', () =>{
             const parseBody = Buffer.concat(body).toString(); // // parseBody is  "message = incmintValue", and message is from above input name message
             const message = parseBody.split('=')[1]; 
-            fs.writeFileSync('message.txt', message);
+            //fs.writeFileSync('message.txt', message); // writeFileSync is a blocking code. If we have 1mb file then it will wait till whole file is written. So use writeFile()
+            fs.writeFile('message.txt', message,  error =>{
+                // if we put below code in this function then this is async code and will be executed in future. 
+                //Before executing this code below code gets executed so to avode this , return this function
+                res.statusCode = 302; // Thsi code is to redirect request
+                res.setHeader('Location','/');
+                return res.end();
+            })
+            
         })
         
-        res.statusCode = 302; // Thsi code is to redirect request
-        res.setHeader('Location','/');
-        return res.end();
+        
     }
 
     res.setHeader('Content-Type','text/html');
