@@ -8,7 +8,7 @@ const app = express(); // Express is a functin we are assiging to app
 
 app.use(bodyParser.urlencoded({extended:false}));
 
-app.use(adminRoutes);
+app.use("/admin",adminRoutes);
 app.use(shooRoutes);
 
 app.use((req , res , next) => {
