@@ -7,7 +7,9 @@ const shooRoutes = require('./src/routes/shop');
 const app = express(); // Express is a functin we are assiging to app
 
 app.use(bodyParser.urlencoded({extended:false}));
-
+// follwoing express.static function allows us to server files statically. Here we are serving css files statically.
+// Statically means not using express routing
+app.use(express.static(path.join(__dirname,'src', 'public'))); 
 app.use("/admin",adminRoutes);
 app.use(shooRoutes);
 
