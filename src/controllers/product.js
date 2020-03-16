@@ -10,11 +10,18 @@ exports.getAddProduct = (req , res , next) => {
 
 exports.postAddProduct = (req , res , next) => { 
     let product = new Product(req.body.title);
-    product.save();
-    res.redirect('/'); // status code will be automatically get attched to it
+    product.save().then(() =>{
+        res.redirect('/'); // status code will be automatically get attched to it
+    });
+    
 }
 
 exports.getProducts = (req , res , next) => {
     let productList = Product.fetchAll();
-    res.render('shop',{pageTitle : 'Product List' , prods : productList});
+    productList.then((result) =>{
+        res.render('shop',{pageTitle : 'Product List' , prods : result});
+    }).catch(err =>{
+        console.log(err);
+    });
+    
 }
