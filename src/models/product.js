@@ -1,19 +1,35 @@
-const product = [];
+
+const mongodb = require('mongodb');
 const getDb = require('../util/database').getDb;
 module.exports = class Product{
-    constructor(title){
-        this.productName = title
+    constructor(title , price , id){
+        this.productName = title;
+        this.productPrice = price;
+        this._id = id;
     }
 
     save(){
         const db = getDb();
+        console.log(this._id);
+        console.log(this);
+        if(this._id){
+            //update product
+            return db.collection('products').updateOne({_id : this._id }, {$set : this}).then(result =>{
+                console.log('result');
+            }).catch(err =>{
+                console.log(err);
+            })
+        }else{
+            //create new product
+            return db.collection('products').insertOne(this).then(result =>{
+                console.log(result);
+            }).catch(err => {
+                console.log(err);
+            });
+            // product.push(this);
+        }
         // mongodb will create products collection if it is not already created by below code
-        return db.collection('products').insertOne(this).then(result =>{
-            console.log(result);
-        }).catch(err => {
-            console.log(err);
-        });
-        // product.push(this);
+        
     }
 
     static fetchAll(){
@@ -23,5 +39,24 @@ module.exports = class Product{
         }).catch(err =>{
             console.log(err);
         });
+    }
+
+    static getProduct(productId){
+        const db = getDb();
+        console.log('id passd by ui is '+productId);
+        return db.collection('products').find({_id : new mongodb.ObjectID(productId)}).toArray().then(result =>{
+            return result;
+        }).catch(err =>{
+            console.log(err);
+        })
+    }
+
+    static deleteDocument(productId){
+        const db = getDb();
+        return db.collection('collection').deleteOne({_id : new mongodb.ObjectID(productId)}).then(result =>{
+            console.log(result);
+        }).catch(err=>{
+            console.log(err);
+        })
     }
 }

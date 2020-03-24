@@ -2,6 +2,7 @@ const express = require('express');
 const  bodyParser = require('body-parser');
 const path = require('path');
 const adminRoutes = require('./src/routes/admin');
+const userRoutes = require('./src/routes/user');
 const shopRoutes = require('./src/routes/shop');
 const { mongoDBConnect } = require('./src/util/database');
 
@@ -13,6 +14,7 @@ app.use(bodyParser.urlencoded({extended:false}));
 // Statically means not using express routing
 app.use(express.static(path.join(__dirname,'src', 'public'))); 
 app.use("/admin",adminRoutes.router);
+app.use("/user",userRoutes.routes);
 app.use(shopRoutes);
 
 app.use((req , res , next) => {
