@@ -2,16 +2,15 @@
 const mongodb = require('mongodb');
 const getDb = require('../util/database').getDb;
 module.exports = class Product{
-    constructor(title , price , id){
+    constructor(title , price , id , userId){
         this.productName = title;
         this.productPrice = price;
         this._id = id;
+        this.userId = userId;
     }
 
     save(){
         const db = getDb();
-        console.log(this._id);
-        console.log(this);
         if(this._id){
             //update product
             return db.collection('products').updateOne({_id : this._id }, {$set : this}).then(result =>{
@@ -59,4 +58,5 @@ module.exports = class Product{
             console.log(err);
         })
     }
+
 }

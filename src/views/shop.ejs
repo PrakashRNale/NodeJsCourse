@@ -14,6 +14,7 @@
             <ul class="main-header__item-list">
                 <li class="main-header__item"><a class="active" href="/">Shop</a></li>
                 <li class="main-header__item"><a href="/admin/add-product">Add Product</a></li>
+                <li class="main-header__item"><a href="/user/cart-items">Cart</a></li>
                 <li class="main-header__item"><a href="/user/add-user">Add User</a></li>
             </ul>
         </nav>
@@ -40,7 +41,7 @@
                                 <a  class="btn" href="/product/<%= product._id %>"> Details </a>
                             </div>
                             <div class="card__actions">
-                                <button class="btn">Add to Cart</button>
+                                <a  class="btn" href="/add-to-cart/<%= product._id %>"> Add to Cart </a>
                             </div>
                         </div>
                     </article>

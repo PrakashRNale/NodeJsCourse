@@ -7,8 +7,14 @@ exports.getAddUser = (req, resp , next) =>{
 }
 
 exports.saveUser = (req, resp , next) =>{
-    let user = new User(req.params.name , req.params.age);
+    let user = new User(req.body.name , req.body.email);
     user.save().then(result =>{
-        resp.render('/');
+        resp.redirect('/'); 
+    })
+}
+
+exports.getCartItems = (req , res , next) =>{
+    req.user.getCartItems().then(items =>{
+        res.render('cart',{pageTitle : 'Cart List' , prods : items});
     })
 }

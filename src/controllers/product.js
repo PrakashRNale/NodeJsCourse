@@ -9,7 +9,7 @@ exports.getAddProduct = (req , res , next) => {
 }
 
 exports.postAddProduct = (req , res , next) => { 
-    let product = new Product(req.body.title , req.body.price);
+    let product = new Product(req.body.title , req.body.price , null , req.user._id);
     product.save().then(() =>{
         res.redirect('/'); // status code will be automatically get attched to it
     });
@@ -54,5 +54,20 @@ exports.deleteProduct = (req , res , next) =>{
     productDeleted.then(()=>{
         console.log('deleted');
         res.redirect('/');
+    })
+}
+
+exports.addToCart = (req , res , next) =>{
+    let productId = req.params.productId;
+    return req.user.addToCart(productId).then(()=>{
+        res.redirect('/user/cart-items/');
+    });
+}
+
+exports.removeFromCart = (req , res , next) => {
+    debugger;
+    let productId = req.params.productId;
+    return req.user.removeFromCart(productId).then(() =>{
+        res.redirect('/user/cart-items');
     })
 }
