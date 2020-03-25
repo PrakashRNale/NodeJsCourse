@@ -12,9 +12,9 @@
     <header class="main-header">
         <nav class="main-header__nav">
             <ul class="main-header__item-list">
-                <li class="main-header__item"><a class="active" href="/">Shop</a></li>
+                <li class="main-header__item"><a href="/">Shop</a></li>
                 <li class="main-header__item"><a href="/admin/add-product">Add Product</a></li>
-                <li class="main-header__item"><a href="/user/cart-items">Cart</a></li>
+                <li class="main-header__item"><a class="active" href="/">Cart</a></li>
                 <li class="main-header__item"><a href="/user/add-user">Add User</a></li>
             </ul>
         </nav>
@@ -33,15 +33,16 @@
                                 alt="A Book">
                         </div>
                         <div class="card__content">
+                            <h2 class="product__price"><%= product.quantity %> items you have saved </h2>
                             <h2 class="product__price">$<%= product.productPrice %></h2>
                             <p class="product__description">A very interesting book about so many even more interesting things!</p>
                         </div>
                         <div class="card__actons-group">
                             <div class="card__actions">
-                                <a  class="btn" href="/product/<%= product._id %>"> Details </a>
+                                <a href="/remove-cart/<%= product._id %>" class="btn"> Remove </a>
                             </div>
                             <div class="card__actions">
-                                <a  class="btn" href="/add-to-cart/<%= product._id %>"> Add to Cart </a>
+                                <a  class="btn"> Purchase </a>
                             </div>
                         </div>
                     </article>

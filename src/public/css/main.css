@@ -50,6 +50,7 @@ body{
   
   .card {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
+    margin-top: 20px;
   }
   
   .card__header,
@@ -71,7 +72,10 @@ body{
   .card__image img {
     width: 100%;
   }
-  
+  .card__actons-group{
+    display: flex;
+    justify-content: center;
+  }
   .card__actions {
       padding: 1rem;
       text-align: center;
