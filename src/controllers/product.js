@@ -1,10 +1,12 @@
 const Product = require('../models/product');
 const mongodb = require('mongodb');
 exports.getAddProduct = (req , res , next) => {
-    res.render('add-product',{
+    res.render('add-product',{ 
         pageTitle : 'Add Porduct',
         path :'/admin/add-product',
-        formCss : true
+        formCss : true,
+        //isAuthenticated : req.isLoggedIn
+        isAuthenticated : req.session.isLoggedIn
     })
 }
 
@@ -18,7 +20,12 @@ exports.postAddProduct = (req , res , next) => {
 exports.getProducts = (req , res , next) => {
     let productList = Product.fetchAll();
     productList.then((result) =>{
-        res.render('shop',{pageTitle : 'Product List' , prods : result});
+        res.render('shop',{
+            pageTitle : 'Product List' , 
+            prods : result,
+            // isAuthenticated : req.isLoggedIn
+            isAuthenticated : req.session.isLoggedIn
+        });
     }).catch(err =>{
         console.log(err);
     });    
@@ -27,7 +34,12 @@ exports.getProducts = (req , res , next) => {
 exports.getProduct = (req , res , next) => {
     let product = Product.getProduct(req.params.productId);
     product.then(result =>{
-        res.render('product-details',{pageTitle : 'Product Details' , prods : result})
+        res.render('product-details',{
+            pageTitle : 'Product Details' , 
+            prods : result,
+            // isAuthenticated : req.isLoggedIn
+            isAuthenticated : req.session.isLoggedIn
+        })
     }).catch(err =>{
         console.log(err);
     })
@@ -36,7 +48,12 @@ exports.getProduct = (req , res , next) => {
 exports.getEditProduct = (req , res , next) => {
     let product = Product.getProduct(req.params.productId);
     product.then(result =>{
-        res.render('edit-product',{pageTitle : 'Product Details' , prods : result})
+        res.render('edit-product',{
+            pageTitle : 'Product Details' , 
+            prods : result,
+            // isAuthenticated : req.isLoggedIn
+            isAuthenticated : req.session.isLoggedIn
+        })
     }).catch(err =>{
         console.log(err);
     })
