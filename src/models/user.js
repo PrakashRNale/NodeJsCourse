@@ -24,8 +24,7 @@ module.exports = class User{
         
         const db = getDb();
         return db.collection('Users').findOne({_id : mongodb.ObjectID(id)}).then(user =>{
-            console.log('user retrived');
-            console.log(user);
+            
             return user;
         }).catch(err => {
             console.log(err);
