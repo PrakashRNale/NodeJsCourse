@@ -11,15 +11,20 @@ exports.getAddProduct = (req , res , next) => {
 }
 
 exports.postAddProduct = (req , res , next) => { 
-    let product = new Product(req.body.title , req.body.price , null , req.user._id);
+    // let product = new Product(req.body.title , req.body.price , null , req.user._id);
+    let product = new Product({
+        title : req.body.title,
+        price : req.body.price
+    })
     product.save().then(() =>{
         res.redirect('/'); // status code will be automatically get attched to it
+    }).catch(err =>{
+        console.log(err)
     });
 }
 
 exports.getProducts = (req , res , next) => {
-    let productList = Product.fetchAll();
-    productList.then((result) =>{
+    Product.find().then((result) =>{
         res.render('shop',{
             pageTitle : 'Product List' , 
             prods : result,
@@ -32,8 +37,9 @@ exports.getProducts = (req , res , next) => {
 }
 
 exports.getProduct = (req , res , next) => {
-    let product = Product.getProduct(req.params.productId);
-    product.then(result =>{
+    console.log('product id to find is '+req.params.productId);
+    Product.findById(req.params.productId).then(result =>{
+        console.log(JSON.stringify(result));
         res.render('product-details',{
             pageTitle : 'Product Details' , 
             prods : result,
