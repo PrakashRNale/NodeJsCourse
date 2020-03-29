@@ -9,18 +9,23 @@ exports.getAddUser = (req, resp , next) =>{
 }
 
 exports.saveUser = (req, resp , next) =>{
-    let user = new User(req.body.name , req.body.email);
+    // let user = new User(req.body.name , req.body.email);
+    let user = new User({
+        name : req.body.name,
+        email : req.body.email
+    })
     user.save().then(result =>{
         resp.redirect('/'); 
     })
 }
 
 exports.getCartItems = (req , res , next) =>{
-    debugger;
-    req.user.getCartItems().then(items =>{
+
+    req.user.populate('cart.items.productId').execPopulate().then(user =>{
+        console.log(user.cart.items);
         res.render('cart',{
             pageTitle : 'Cart List' , 
-            prods : items,
+            prods : user.cart.items,
             // isAuthenticated : req.isLoggedIn
             isAuthenticated : req.session.isLoggedIn
         });

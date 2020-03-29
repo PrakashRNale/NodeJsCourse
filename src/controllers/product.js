@@ -10,16 +10,24 @@ exports.getAddProduct = (req , res , next) => {
     })
 }
 
-exports.postAddProduct = (req , res , next) => { 
-    let product = new Product(req.body.title , req.body.price , null , req.user._id);
+exports.postAddProduct = (req , res , next) => {
+    debugger; 
+    // let product = new Product(req.body.title , req.body.price , null , req.user._id);
+    let product = new Product({
+        title : req.body.title,
+        price : req.body.price,
+        userId : req.user.id  // here even if we do like userId : user , mongoose will assigne only user._id to this ref
+    })
     product.save().then(() =>{
         res.redirect('/'); // status code will be automatically get attched to it
+    }).catch(err =>{
+        console.log(err)
     });
 }
 
 exports.getProducts = (req , res , next) => {
-    let productList = Product.fetchAll();
-    productList.then((result) =>{
+    Product.find().then((result) =>{
+        console.log(JSON.stringify(result));
         res.render('shop',{
             pageTitle : 'Product List' , 
             prods : result,
@@ -32,8 +40,9 @@ exports.getProducts = (req , res , next) => {
 }
 
 exports.getProduct = (req , res , next) => {
-    let product = Product.getProduct(req.params.productId);
-    product.then(result =>{
+    console.log('product id to find is '+req.params.productId);
+    Product.findById(req.params.productId).then(result =>{
+        console.log(JSON.stringify(result));
         res.render('product-details',{
             pageTitle : 'Product Details' , 
             prods : result,
@@ -46,11 +55,10 @@ exports.getProduct = (req , res , next) => {
 }
 
 exports.getEditProduct = (req , res , next) => {
-    let product = Product.getProduct(req.params.productId);
-    product.then(result =>{
+    Product.findById(req.params.productId).then(result =>{
         res.render('edit-product',{
             pageTitle : 'Product Details' , 
-            prods : result,
+            product : result,
             // isAuthenticated : req.isLoggedIn
             isAuthenticated : req.session.isLoggedIn
         })
@@ -60,15 +68,21 @@ exports.getEditProduct = (req , res , next) => {
 }
 
 exports.updateProduct = (req , res , next) =>{
-    let product = new Product(req.body.title , req.body.price , new mongodb.ObjectID(req.params.productId));
-    product.save().then(() =>{
-        res.redirect('/'); // status code will be automatically get attched to it
-    });
+    // let product = new Product(req.body.title , req.body.price , new mongodb.ObjectID(req.params.productId));
+    Product.findById(req.params.productId).then(product =>{
+        product.title = req.body.title;
+        product.price = req.body.price;
+        return product.save();
+
+    }).then(result =>{
+        res.redirect('/');
+    })
+    
 }
 
 exports.deleteProduct = (req , res , next) =>{
-    let productDeleted = Product.deleteDocument(req.params.productId);
-    productDeleted.then(()=>{
+    // let productDeleted = Product.deleteDocument(req.params.productId);
+    Product.findByIdAndRemove(req.params.productId).then(()=>{
         console.log('deleted');
         res.redirect('/');
     })
@@ -76,6 +90,7 @@ exports.deleteProduct = (req , res , next) =>{
 
 exports.addToCart = (req , res , next) =>{
     let productId = req.params.productId;
+    debugger;
     return req.user.addToCart(productId).then(()=>{
         res.redirect('/user/cart-items/');
     });
