@@ -4,12 +4,13 @@ const path = require('path');
 const session = require('express-session');
 const mongoose = require('mongoose');
 const MongoDBStore = require('connect-mongodb-session')(session);
+
+const User = require('./src/models/user');
 const adminRoutes = require('./src/routes/admin');
 const userRoutes = require('./src/routes/user');
 const shopRoutes = require('./src/routes/shop');
 const authRoutes = require('./src/routes/auth');
 
-const User = require('./src/models/user');
 // const { mongoDBConnect } = require('./src/util/database'); // dont need this for mongoose
 
 const store = new MongoDBStore({
@@ -30,22 +31,21 @@ app.use(session({
     store : store
 }))
 
-// app.use((req , res , next) =>{
-//     if(!req.session.user){
-//         return next();
-//     }
-//     User.findById(req.session.user._id).then(user =>{
-//         debugger;
-//         req.user = new User(user.name , user.email, user.cart , user._id);
-//         // below code is used only with cookie
-//         if(req.get('Cookie').split(';').length > 1){
-//             req.isLoggedIn = !!req.get('Cookie').split(';')[1].split(':')[1];
-//         }
-//         next();
-//     }).catch(err=>{
-//         console.log(err);
-//     })
-// })
+app.use((req , res , next) =>{
+    if(!req.session.user){
+        return next();
+    }
+    User.findById(req.session.user._id).then(user =>{
+        req.user = user;
+        // below code is used only with cookie not for session
+        if(req.get('Cookie').split(';').length > 1){
+            req.isLoggedIn = !!req.get('Cookie').split(';')[1].split(':')[1];
+        }
+        next();
+    }).catch(err=>{
+        console.log(err);
+    })
+})
 
 app.use(express.static(path.join(__dirname,'src', 'public'))); 
 app.use("/admin",adminRoutes.router);

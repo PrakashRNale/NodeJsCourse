@@ -1,3 +1,77 @@
+const mongoose = require('mongoose');
+
+const Schema = mongoose.Schema;
+
+const userSchema = new Schema({
+    name : {
+        type : String,
+        required : true
+    },
+    email : {
+        type : String,
+        required : true
+    },
+    cart : {
+        items : [{
+            productId : {
+                type : Schema.Types.ObjectId,
+                ref : 'Product',
+                required : true
+            },
+            quantity : {
+                type : Number
+            }
+        }
+        ]
+    }
+})
+
+userSchema.methods.addToCart = function (productId){
+    console.log('product id is added '+productId);
+    //let productIndex = this.cart.items.findByIndex
+    debugger;
+    let updatedCartItems ;
+    if(this.cart.items){
+        updatedCartItems = [...this.cart.items];
+    }else{
+        updatedCartItems = [];
+    }
+
+    let cartIndex = updatedCartItems.findIndex(cp => {
+        return cp.productId.toString() === productId.toString()
+    })
+    let quantity = 1;
+
+    if(cartIndex > -1){
+        updatedCartItems[cartIndex].quantity += 1;
+    }else{
+        let item = {
+            productId : productId,
+            quantity : quantity
+        }
+        updatedCartItems.push(item);
+    }
+
+    let updatedCart = {
+        items : updatedCartItems
+    }
+    this.cart = updatedCart;
+    return this.save();
+}
+
+userSchema.methods.removeFromCart = function(productId){
+    let updatedCartItems = this.cart.items.filter(cp => {
+        return cp._id.toString() != productId.toString();
+    })
+
+    this.cart.items = updatedCartItems;
+    return this.save();
+}
+
+module.exports = mongoose.model('User', userSchema);
+
+// Below code is used without mongoose
+
 // const getDb = require('../util/database').getDb;
 // const mongodb = require('mongodb');
 

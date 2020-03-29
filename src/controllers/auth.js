@@ -11,8 +11,8 @@ exports.login = (req , res , next) =>{
 
 exports.postLogin = (req , res , next) =>{
     // res.setHeader('Set-Cookie','loggedIn:true');
-    User.findById('5e79e3501c9d440000f4847f').then(user =>{
-        req.session.user = new User(user.name , user.email, user.cart , user._id);
+    User.findById('5e7ef2ed01882e626427afb0').then(user =>{
+        req.session.user = user
         debugger;
         req.session.isLoggedIn = true;
         // below code is used only with cookie
