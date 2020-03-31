@@ -1,5 +1,5 @@
 const User = require('../models/user');
-
+const bcrypt = require('bcryptjs');
 exports.login = (req , res , next) =>{
     console.log('in login view ');
     res.render('auth/login',{
@@ -11,16 +11,23 @@ exports.login = (req , res , next) =>{
 
 exports.postLogin = (req , res , next) =>{
     // res.setHeader('Set-Cookie','loggedIn:true');
-    User.findById('5e7ef2ed01882e626427afb0').then(user =>{
-        req.session.user = user
-        debugger;
-        req.session.isLoggedIn = true;
-        // below code is used only with cookie
-        if(req.get('Cookie').split(';').length > 1){
-            req.isLoggedIn = !!req.get('Cookie').split(';')[1].split(':')[1];
+    let {email , password} = req.body;
+    User.findOne({email : email}).then(userDoc =>{
+        if(!userDoc){
+            return res.redirect('/login');
         }
-        req.session.save(err =>{
-            res.redirect('/');
+        debugger;
+        bcrypt.compare(password , userDoc.password).then(doPasswordMatch =>{
+            if(doPasswordMatch){
+                req.session.user = userDoc;
+                req.session.isLoggedIn = true;
+                return req.session.save(err =>{
+                    res.redirect('/');
+                })
+            }
+            res.redirect('/login');
+        }).catch(err =>{
+            res.redirect('/login');
         })
         
     }).catch(err=>{
@@ -44,16 +51,20 @@ exports.singup = (req , res , next) =>{
 
 exports.postSingup = (req , res , next) =>{
     // res.setHeader('Set-Cookie','loggedIn:true');
-    User.findById('5e79e3501c9d440000f4847f').then(user =>{
-        req.session.user = new User(user.name , user.email, user.cart , user._id);
-        debugger;
-        req.session.isLoggedIn = true;
-        // below code is used only with cookie
-        if(req.get('Cookie').split(';').length > 1){
-            req.isLoggedIn = !!req.get('Cookie').split(';')[1].split(':')[1];
+    let {email , password} = req.body;
+    User.findOne({email : email}).then(userDoc =>{
+        if(userDoc){
+            return res.redirect('/signup');
         }
-        req.session.save(err =>{
-            res.redirect('/');
+        return bcrypt.hash(password , 5).then(hashedPassword =>{
+            let user = new User({
+                email : email , 
+                password : hashedPassword
+            })
+
+            return user.save();
+        }).then(result =>{
+            res.redirect('/login');
         })
         
     }).catch(err=>{
