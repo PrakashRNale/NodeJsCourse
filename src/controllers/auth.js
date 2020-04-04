@@ -3,9 +3,7 @@ const bcrypt = require('bcryptjs');
 exports.login = (req , res , next) =>{
     console.log('in login view ');
     res.render('auth/login',{
-        pageTitle : 'Login',
-        // isAuthenticated : req.isLoggedIn, // Only with cookie
-        isAuthenticated : req.session.isLoggedIn
+        pageTitle : 'Login'
     })
 }
 
@@ -44,8 +42,7 @@ exports.postLogout = (req , res , next) =>{
 exports.singup = (req , res , next) =>{
     console.log('in signup');
     res.render('auth/signup',{
-        pageTitle : 'Signup' ,
-        isAuthenticated : req.session.isLoggedIn   
+        pageTitle : 'Signup' 
     })
 }
 

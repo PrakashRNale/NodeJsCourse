@@ -47,6 +47,11 @@ app.use((req , res , next) =>{
     })
 })
 
+app.use((req , res , next) =>{
+    res.locals.isAuthenticated = req.session.isLoggedIn;
+    next();
+})
+
 app.use(express.static(path.join(__dirname,'src', 'public'))); 
 app.use("/admin",adminRoutes.router);
 app.use("/user",userRoutes.routes);

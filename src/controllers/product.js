@@ -4,9 +4,7 @@ exports.getAddProduct = (req , res , next) => {
     res.render('add-product',{ 
         pageTitle : 'Add Porduct',
         path :'/admin/add-product',
-        formCss : true,
-        //isAuthenticated : req.isLoggedIn
-        isAuthenticated : req.session.isLoggedIn
+        formCss : true
     })
 }
 
@@ -30,9 +28,8 @@ exports.getProducts = (req , res , next) => {
         console.log(JSON.stringify(result));
         res.render('shop',{
             pageTitle : 'Product List' , 
-            prods : result,
-            // isAuthenticated : req.isLoggedIn
-            isAuthenticated : req.session.isLoggedIn
+            prods : result
+            
         });
     }).catch(err =>{
         console.log(err);
@@ -45,9 +42,7 @@ exports.getProduct = (req , res , next) => {
         console.log(JSON.stringify(result));
         res.render('product-details',{
             pageTitle : 'Product Details' , 
-            prods : result,
-            // isAuthenticated : req.isLoggedIn
-            isAuthenticated : req.session.isLoggedIn
+            prods : result
         })
     }).catch(err =>{
         console.log(err);
@@ -58,9 +53,7 @@ exports.getEditProduct = (req , res , next) => {
     Product.findById(req.params.productId).then(result =>{
         res.render('edit-product',{
             pageTitle : 'Product Details' , 
-            product : result,
-            // isAuthenticated : req.isLoggedIn
-            isAuthenticated : req.session.isLoggedIn
+            product : result
         })
     }).catch(err =>{
         console.log(err);

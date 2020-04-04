@@ -2,9 +2,7 @@ const User = require('../models/user');
 
 exports.getAddUser = (req, resp , next) =>{
     resp.render('add-user',{
-        pageTitle : 'Add User',
-        // isAuthenticated : req.isLoggedIn
-        isAuthenticated : req.session.isLoggedIn
+        pageTitle : 'Add User'
     })
 }
 
@@ -25,9 +23,7 @@ exports.getCartItems = (req , res , next) =>{
         console.log(user.cart.items);
         res.render('cart',{
             pageTitle : 'Cart List' , 
-            prods : user.cart.items,
-            // isAuthenticated : req.isLoggedIn
-            isAuthenticated : req.session.isLoggedIn
+            prods : user.cart.items
         });
     })
 }
