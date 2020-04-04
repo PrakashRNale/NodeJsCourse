@@ -1,5 +1,6 @@
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
+const sendMail = require("../util/mail");
 exports.login = (req , res , next) =>{
     console.log('in login view ');
     res.render('auth/login',{
@@ -20,6 +21,7 @@ exports.postLogin = (req , res , next) =>{
                 req.session.user = userDoc;
                 req.session.isLoggedIn = true;
                 return req.session.save(err =>{
+                    sendMail(email);
                     res.redirect('/');
                 })
             }
@@ -61,6 +63,7 @@ exports.postSingup = (req , res , next) =>{
 
             return user.save();
         }).then(result =>{
+            sendMail(email);
             res.redirect('/login');
         })
         
