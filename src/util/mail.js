@@ -11,14 +11,8 @@ const transporter = nodemailer.createTransport({
   });
 
   
-  const sendMail = (email) =>{
-    var mailOptions = {
-        from: 'prakashcsedyp@gmail.com',
-        to: email,
-        subject: 'Sending Email using Node.js',
-        text: 'That was easy!'
-      };
-      
+  const sendMail = (mailOptions) =>{
+    
     return transporter.sendMail(mailOptions).then(result =>{
         return result
     }).catch(error =>{
