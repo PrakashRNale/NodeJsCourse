@@ -1,26 +1,34 @@
 const User = require('../models/user');
+const bcrypt = require('bcryptjs');
+const crypto  = require('crypto');
 
+const sendMail = require("../util/mail");
 exports.login = (req , res , next) =>{
     console.log('in login view ');
     res.render('auth/login',{
-        pageTitle : 'Login',
-        // isAuthenticated : req.isLoggedIn, // Only with cookie
-        isAuthenticated : req.session.isLoggedIn
+        pageTitle : 'Login'
     })
 }
 
 exports.postLogin = (req , res , next) =>{
     // res.setHeader('Set-Cookie','loggedIn:true');
-    User.findById('5e7ef2ed01882e626427afb0').then(user =>{
-        req.session.user = user
-        debugger;
-        req.session.isLoggedIn = true;
-        // below code is used only with cookie
-        if(req.get('Cookie').split(';').length > 1){
-            req.isLoggedIn = !!req.get('Cookie').split(';')[1].split(':')[1];
+    let {email , password} = req.body;
+    User.findOne({email : email}).then(userDoc =>{
+        if(!userDoc){
+            return res.redirect('/login');
         }
-        req.session.save(err =>{
-            res.redirect('/');
+        bcrypt.compare(password , userDoc.password).then(doPasswordMatch =>{
+            if(doPasswordMatch){
+                req.session.user = userDoc;
+                req.session.isLoggedIn = true;
+                return req.session.save(err =>{
+                    sendMail(email);
+                    res.redirect('/');
+                })
+            }
+            res.redirect('/login');
+        }).catch(err =>{
+            res.redirect('/login');
         })
         
     }).catch(err=>{
@@ -37,26 +45,119 @@ exports.postLogout = (req , res , next) =>{
 exports.singup = (req , res , next) =>{
     console.log('in signup');
     res.render('auth/signup',{
-        pageTitle : 'Signup' ,
-        isAuthenticated : req.session.isLoggedIn   
+        pageTitle : 'Signup' 
     })
 }
 
 exports.postSingup = (req , res , next) =>{
-    // res.setHeader('Set-Cookie','loggedIn:true');
-    User.findById('5e79e3501c9d440000f4847f').then(user =>{
-        req.session.user = new User(user.name , user.email, user.cart , user._id);
-        debugger;
-        req.session.isLoggedIn = true;
-        // below code is used only with cookie
-        if(req.get('Cookie').split(';').length > 1){
-            req.isLoggedIn = !!req.get('Cookie').split(';')[1].split(':')[1];
+    
+    let {email , password} = req.body;
+    User.findOne({email : email}).then(userDoc =>{
+        if(userDoc){
+            return res.redirect('/signup');
         }
-        req.session.save(err =>{
-            res.redirect('/');
+        return bcrypt.hash(password , 5).then(hashedPassword =>{
+            let user = new User({
+                email : email , 
+                password : hashedPassword
+            })
+
+            return user.save();
+        }).then(result =>{
+            var mailOptions = {
+                from: 'prakashcsedyp@gmail.com',
+                to: email,
+                subject: 'Sign Up',
+                html: `
+                <p>Your signup is successfully done</p>
+                `
+              };
+            sendMail(mailOptions);
+            res.redirect('/login');
         })
         
     }).catch(err=>{
+        console.log(err);
+    })
+}
+
+exports.getResetPasswordEmail = (req , res , next) =>{
+    res.render('auth/reset-password-email',
+    {
+        pageTitle : "Enter Email"
+    });
+}
+
+exports.postResetPasswordEmail = (req , res , next) =>{
+    console.log('in password reset ');
+    let email = req.body.email;
+    crypto.randomBytes(32 , (error , buffer) =>{
+        if(error){
+            console.log(error);
+            return res.redirect('/reset-password');
+        }
+        let token = buffer.toString('hex');
+        User.findOne({email : email}).then(user => {
+            if(!user){
+                res.redirect('/reset-password');
+            }
+    
+            user.resetToken = token;
+            user.resetTokenExpiration = Date.now() + 3600000;
+            return user.save();
+        }).then(result =>{
+            console.log(token);
+            var mailOptions = {
+                from: 'prakashcsedyp@gmail.com',
+                to: email,
+                subject: 'Reset Password',
+                html: `
+                <p>You requested password reset</p>
+                <p>click this <a href="http://localhost:5000/reset/${token}">link</a> to set a new a pssword</p> 
+                `
+              };
+              sendMail(mailOptions);
+              res.redirect('/reset');
+        }).catch(err =>{
+            console.log(err);
+        })
+    })
+}
+
+exports.getPasswordReset = (req , res , next) =>{
+    let token = req.params.token;
+    User.findOne({resetToken : token , resetTokenExpiration :  {$gt : Date.now()} }).then(user =>{
+        res.render('auth/reset-password',{
+            pageTitle : 'Password Reset',
+            userId : user._id,
+            passwordToken : token
+        });
+    }).catch(error =>{
+        console.log(error);
+    })
+    
+}
+
+exports.postPasswordReset = (req , res , next) =>{
+    let { password , userId , passwordToken } = req.body;
+    let resetUser ; 
+    User.findOne({
+        resetToken : passwordToken , 
+        resetTokenExpiration :  {$gt : Date.now()}, 
+        _id : userId
+    }).then(user =>{
+        resetUser = user;
+        return bcrypt.hash(password , 12).then();
+    }).then(hashedPassword =>{
+        resetUser.password = hashedPassword;
+        resetUser.resetToken = undefined;
+        resetUser.resetTokenExpiration = undefined;
+        resetUser.save().then(result =>{
+            res.redirect('/login');
+        }).catch(error =>{
+            console.log(error);
+        })
+    }).catch(err =>{
         console.log(err);
     })
 }

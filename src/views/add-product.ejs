@@ -17,6 +17,7 @@
                 <% if(isAuthenticated) { %>
                 <li class="main-header__item"><a class="active" href="/admin/add-product">Add Product</a></li>
                 <li class="main-header__item"><a href="/user/cart-items">Cart</a></li>
+                <li class="main-header__item"><a href="/admin/products">Admin products</a></li>
                 <% } %>
                 <li class="main-header__item"><a href="/user/add-user">Add User</a></li>
             </ul>
@@ -24,6 +25,7 @@
                 <% if(!isAuthenticated) { %>
                     <li class="main-header__item"><a href="/login">Login</a></li>
                     <li class="main-header__item"><a href="/signup">Signup</a></li>
+                    
                 <% }else{ %>
                     <li class="main-header__item"><a href="/logout">Logout</a></li>
                 <% } %>

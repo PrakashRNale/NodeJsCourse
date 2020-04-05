@@ -4,9 +4,7 @@ exports.getAddProduct = (req , res , next) => {
     res.render('add-product',{ 
         pageTitle : 'Add Porduct',
         path :'/admin/add-product',
-        formCss : true,
-        //isAuthenticated : req.isLoggedIn
-        isAuthenticated : req.session.isLoggedIn
+        formCss : true
     })
 }
 
@@ -25,14 +23,22 @@ exports.postAddProduct = (req , res , next) => {
     });
 }
 
+exports.getAdminProducts = (req , res , next) =>{
+    Product.find({userId : req.user._id}).then(products => {
+        res.render('admin.ejs',{
+            pageTitle : 'Admin Products' , 
+            prods : products
+        })
+    })
+}
+
 exports.getProducts = (req , res , next) => {
     Product.find().then((result) =>{
         console.log(JSON.stringify(result));
         res.render('shop',{
             pageTitle : 'Product List' , 
-            prods : result,
-            // isAuthenticated : req.isLoggedIn
-            isAuthenticated : req.session.isLoggedIn
+            prods : result
+            
         });
     }).catch(err =>{
         console.log(err);
@@ -45,9 +51,7 @@ exports.getProduct = (req , res , next) => {
         console.log(JSON.stringify(result));
         res.render('product-details',{
             pageTitle : 'Product Details' , 
-            prods : result,
-            // isAuthenticated : req.isLoggedIn
-            isAuthenticated : req.session.isLoggedIn
+            prods : result
         })
     }).catch(err =>{
         console.log(err);
@@ -58,9 +62,7 @@ exports.getEditProduct = (req , res , next) => {
     Product.findById(req.params.productId).then(result =>{
         res.render('edit-product',{
             pageTitle : 'Product Details' , 
-            product : result,
-            // isAuthenticated : req.isLoggedIn
-            isAuthenticated : req.session.isLoggedIn
+            product : result
         })
     }).catch(err =>{
         console.log(err);
@@ -70,19 +72,22 @@ exports.getEditProduct = (req , res , next) => {
 exports.updateProduct = (req , res , next) =>{
     // let product = new Product(req.body.title , req.body.price , new mongodb.ObjectID(req.params.productId));
     Product.findById(req.params.productId).then(product =>{
+        if(product.userId.toString() !== req.user._id.toString()){
+            return res.redirect('/');
+        }
         product.title = req.body.title;
         product.price = req.body.price;
-        return product.save();
+        return product.save().then(result =>{
+            res.redirect('/admin/products');
+        });
 
-    }).then(result =>{
-        res.redirect('/');
     })
     
 }
 
 exports.deleteProduct = (req , res , next) =>{
     // let productDeleted = Product.deleteDocument(req.params.productId);
-    Product.findByIdAndRemove(req.params.productId).then(()=>{
+    Product.deleteOne({_id : req.params.productId , userId : req.user._id}).then(()=>{
         console.log('deleted');
         res.redirect('/');
     })
