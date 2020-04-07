@@ -47,20 +47,31 @@ exports.singup = (req , res , next) =>{
     console.log('in signup');
     res.render('auth/signup',{
         pageTitle : 'Signup' ,
-        errorMessage  : ''
+        errorMessage  : '',
+        oldInput : {
+            email : '',
+            password : '',
+            confirmPassword : ''
+        }
     })
 }
 
 exports.postSingup = (req , res , next) =>{
+    let {email , password} = req.body;
     const errors = validationResult(req);
     if(!errors.isEmpty()){
         console.log(errors.array());
         return res.render('auth/signup',{
             pageTitle : 'Signup' ,
-            errorMessage : errors.array()[0].msg
+            errorMessage : errors.array()[0].msg,
+            oldInput : {
+                email : email,
+                password : password,
+                confirmPassword : req.body.confirmPassword
+            }
         });
     }
-    let {email , password} = req.body;
+    
     User.findOne({email : email}).then(userDoc =>{
         if(userDoc){
             return res.redirect('/signup');
