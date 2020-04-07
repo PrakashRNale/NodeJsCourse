@@ -1,6 +1,7 @@
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 const crypto  = require('crypto');
+const { validationResult } = require('express-validator');
 
 const sendMail = require("../util/mail");
 exports.login = (req , res , next) =>{
@@ -45,12 +46,20 @@ exports.postLogout = (req , res , next) =>{
 exports.singup = (req , res , next) =>{
     console.log('in signup');
     res.render('auth/signup',{
-        pageTitle : 'Signup' 
+        pageTitle : 'Signup' ,
+        errorMessage  : ''
     })
 }
 
 exports.postSingup = (req , res , next) =>{
-    
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+        console.log(errors.array());
+        return res.render('auth/signup',{
+            pageTitle : 'Signup' ,
+            errorMessage : errors.array()[0].msg
+        });
+    }
     let {email , password} = req.body;
     User.findOne({email : email}).then(userDoc =>{
         if(userDoc){

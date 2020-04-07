@@ -29,8 +29,10 @@
     </header>
    
     <main>
-        <form class="product-form" action="/signup" method="POST">
-            
+        <form class="product-form" action="/signup" method="POST" novalidate>
+            <% if(errorMessage) { %>
+                <p><%= errorMessage %></p>
+            <% } %>
             <div class="form-control">
                 <label for="email">Email</label>
                 <input id="email" type="email" name="email" />

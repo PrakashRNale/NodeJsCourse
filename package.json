@@ -28,8 +28,10 @@
     "ejs": "^2.6.1",
     "express": "^4.17.1",
     "express-session": "^1.17.0",
+    "express-validator": "^6.4.0",
     "mongodb": "^3.5.5",
     "mongoose": "^5.9.6",
+    "nodemailer": "^6.4.6",
     "save": "^2.4.0"
   }
 }
