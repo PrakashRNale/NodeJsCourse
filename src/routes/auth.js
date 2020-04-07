@@ -4,7 +4,10 @@ const router = express.Router();
 
 const AuthController = require('../controllers/auth');
 router.get('/login',AuthController.login);
-router.post('/login' , AuthController.postLogin);
+router.post('/login', [
+check('email').isEmail().withMessage('Please enter valid email'), 
+check('password','Please enter with minimum 5 characters and only alphanumeric').isLength({min : 5 , max : 20}).isAlphanumeric() ], 
+AuthController.postLogin);
 router.get('/logout' , AuthController.postLogout);
 router.get('/signup', AuthController.singup);
 router.post('/signup' , [

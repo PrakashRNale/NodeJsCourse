@@ -7,16 +7,39 @@ const sendMail = require("../util/mail");
 exports.login = (req , res , next) =>{
     console.log('in login view ');
     res.render('auth/login',{
-        pageTitle : 'Login'
+        pageTitle : 'Login',
+        errorMessage : '',
+        oldInput : {
+            email : '',
+            password : ''
+        }
     })
 }
 
 exports.postLogin = (req , res , next) =>{
     // res.setHeader('Set-Cookie','loggedIn:true');
     let {email , password} = req.body;
+    let errors = validationResult(req);
+    if(!errors.isEmpty()){
+        res.render('auth/login',{
+            pageTitle : 'Login',
+            errorMessage : errors.array()[0].msg,
+            oldInput : {
+                email : email,
+                password : password
+            }
+        })
+    }
     User.findOne({email : email}).then(userDoc =>{
         if(!userDoc){
-            return res.redirect('/login');
+            res.render('auth/login',{
+                pageTitle : 'Login',
+                errorMessage : errors.array()[0].msg,
+                oldInput : {
+                    email : email,
+                    password : password
+                }
+            });
         }
         bcrypt.compare(password , userDoc.password).then(doPasswordMatch =>{
             if(doPasswordMatch){
