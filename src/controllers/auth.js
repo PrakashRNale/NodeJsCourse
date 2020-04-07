@@ -20,6 +20,7 @@ exports.postLogin = (req , res , next) =>{
     // res.setHeader('Set-Cookie','loggedIn:true');
     let {email , password} = req.body;
     let errors = validationResult(req);
+    //validationResult function actually collects all errors that it get from check or body methods in route
     if(!errors.isEmpty()){
         res.render('auth/login',{
             pageTitle : 'Login',
@@ -34,7 +35,7 @@ exports.postLogin = (req , res , next) =>{
         if(!userDoc){
             res.render('auth/login',{
                 pageTitle : 'Login',
-                errorMessage : errors.array()[0].msg,
+                errorMessage : 'Invalid Email or Password',
                 oldInput : {
                     email : email,
                     password : password
@@ -50,7 +51,14 @@ exports.postLogin = (req , res , next) =>{
                     res.redirect('/');
                 })
             }
-            res.redirect('/login');
+            res.render('auth/login',{
+                pageTitle : 'Login',
+                errorMessage : 'Invalid Email or Password',
+                oldInput : {
+                    email : email,
+                    password : password
+                }
+            });
         }).catch(err =>{
             res.redirect('/login');
         })
