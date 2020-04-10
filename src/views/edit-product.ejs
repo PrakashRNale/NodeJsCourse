@@ -34,10 +34,14 @@
     <main>
             <div class="grid">
                 <main>
-                    <form class="product-form" action="/admin/update-product/<%= product._id %>" method="POST">
+                    <form class="product-form" action="/admin/update-product/<%= product._id %>" method="POST" enctype="multipart/form-data">
                         <div class="form-control">
                             <label for="title">Title</label>
                             <input id="title" type="text" name="title" value="<%= product.title %>" />
+                        </div>
+                        <div class="form-control">
+                            <label for="image">Image</label>
+                            <input id="image" type="file" name="image" />
                         </div>
                         <div class="form-control">
                             <label for="price">Price</label>

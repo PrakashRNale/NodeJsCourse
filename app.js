@@ -1,5 +1,6 @@
 const express = require('express');
 const  bodyParser = require('body-parser');
+const multer = require('multer');
 const path = require('path');
 const session = require('express-session');
 const mongoose = require('mongoose');
@@ -18,12 +19,29 @@ const store = new MongoDBStore({
     collection : "Session"
 })
 
+const fileStorage = multer.diskStorage({
+    destination : (req , file , callback) =>{
+        callback(null ,'images');
+    },
+    filename : (req , file , callback) =>{
+        callback(null , new Date().toISOString().replace(/:/g, '-') +"-"+ file.originalname);
+    }
+})
+
+const fileFilter = (req , file , callback) =>{
+    console.log(file);
+    if(file.mimetype == 'image/png' || file.mimetype == 'image/jpg'){
+        callback(null , true);
+    }else{
+        callback(null , false)
+    }
+}
+
 const app = express(); // Express is a functin we are assiging to app
 app.set('view engine','ejs');
 app.set('views','src/views');
 app.use(bodyParser.urlencoded({extended:false}));
-// follwoing express.static function allows us to server files statically. Here we are serving css files statically.
-// Statically means not using express routing
+app.use(multer({storage : fileStorage , fileFilter : fileFilter}).single('image'))
 app.use(session({
     secret : "secretkey",
     resave : false,
@@ -43,6 +61,7 @@ app.use((req , res , next) =>{
         }
         next();
     }).catch(err=>{
+        console.log('1');
         console.log(err);
     })
 })
@@ -52,7 +71,10 @@ app.use((req , res , next) =>{
     next();
 })
 
+// follwoing express.static function allows us to server files statically. Here we are serving css files statically.
+// Statically means not using express routing
 app.use(express.static(path.join(__dirname,'src', 'public'))); 
+app.use('/images',express.static(path.join(__dirname,'images'))); 
 app.use("/admin",adminRoutes.router);
 app.use("/user",userRoutes.routes);
 app.use(shopRoutes);
@@ -67,9 +89,10 @@ app.use((req , res , next) => {
 //Followng middleware is special kind of middleware. Error handling middleware
 // When Express detects anywhere in the code next(error) it calls error handling middleware.
 
-app.use((error , req , res , next) =>{
-    res.status(500).render('500',{pageTitle : "Error"});
-})
+// app.use((error , req , res , next) =>{
+//     res.locals.isAuthenticated = true;
+//     res.status(500).render('500',{pageTitle : "Error"});
+// })
 
 //With mongoose we dont need database.js file in util. 
 //As mongoose will manage all utilities behind the scenes for us.
@@ -81,6 +104,7 @@ mongoose.connect('mongodb+srv://prakash:prakash@cluster0-tkc4p.mongodb.net/NodeC
     console.log('go to http://localhost:5000/');
     app.listen(5000);
 }).catch(err =>{
+    console.log('2');
     console.log(err);
 })
 // mongoDBConnect(client =>{
