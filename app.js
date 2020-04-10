@@ -21,7 +21,7 @@ const store = new MongoDBStore({
 
 const fileStorage = multer.diskStorage({
     destination : (req , file , callback) =>{
-        callback(null ,path.join(__dirname,'images'));
+        callback(null ,'images');
     },
     filename : (req , file , callback) =>{
         callback(null , new Date().toISOString().replace(/:/g, '-') +"-"+ file.originalname);
@@ -74,7 +74,7 @@ app.use((req , res , next) =>{
 // follwoing express.static function allows us to server files statically. Here we are serving css files statically.
 // Statically means not using express routing
 app.use(express.static(path.join(__dirname,'src', 'public'))); 
-app.use(express.static(path.join(__dirname,'images'))); 
+app.use('/images',express.static(path.join(__dirname,'images'))); 
 app.use("/admin",adminRoutes.router);
 app.use("/user",userRoutes.routes);
 app.use(shopRoutes);

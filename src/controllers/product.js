@@ -1,3 +1,6 @@
+const fs = require('fs');
+const path = require('path');
+
 const Product = require('../models/product');
 const mongodb = require('mongodb');
 exports.getAddProduct = (req , res , next) => {
@@ -85,11 +88,16 @@ exports.getEditProduct = (req , res , next) => {
 exports.updateProduct = (req , res , next) =>{
     // let product = new Product(req.body.title , req.body.price , new mongodb.ObjectID(req.params.productId));
     Product.findById(req.params.productId).then(product =>{
+        let image = req.file;
         if(product.userId.toString() !== req.user._id.toString()){
             return res.redirect('/');
         }
         product.title = req.body.title;
         product.price = req.body.price;
+        // for edit update image only if it is provided by client
+        if(image){
+            product.imageUrl = image.path;
+        }
         return product.save().then(result =>{
             res.redirect('/admin/products');
         });
@@ -120,4 +128,31 @@ exports.removeFromCart = (req , res , next) => {
     return req.user.removeFromCart(productId).then(() =>{
         res.redirect('/user/cart-items');
     })
+}
+
+exports.getInvoice = (req , res , next) =>{
+    const orderId = req.params.orderId;
+    const fileName = 'Rent.pdf';
+    const invoicePath = path.join('invoices', fileName);
+    // fs.readFile(invoicePath , (err , data) =>{
+    //     if(err){
+    //         return next(err);
+    //     }
+    //     res.setHeader('content-type' , 'application/pdf');
+    //     res.setHeader('content-Disposition', 'attachment ; filename="'+ fileName + '"');
+    //     res.send(data);
+    // });
+
+
+    // Above code is preloading. Means we are reading/loading file into memory prior to sending to browser
+    // If file is big and if there are multiple requests then server may go into memory overload issue.
+    // so use streaming concept
+    // Response object is writable streams. so we can use readable streams to pipe into a writable stream. 
+    // So we can pipe readable stream into response. Means response will be streamed to browser and will contain data
+    // data will be downloaded by browser
+    
+    const file = fs.createReadStream(invoicePath);
+    res.setHeader('content-type' , 'application/pdf');
+    res.setHeader('content-Disposition', 'attachment ; filename="'+ fileName + '"');
+    file.pipe(res);
 }
