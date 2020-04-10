@@ -64,6 +64,13 @@ app.use((req , res , next) => {
 });
 
 
+//Followng middleware is special kind of middleware. Error handling middleware
+// When Express detects anywhere in the code next(error) it calls error handling middleware.
+
+app.use((error , req , res , next) =>{
+    res.status(500).render('500',{pageTitle : "Error"});
+})
+
 //With mongoose we dont need database.js file in util. 
 //As mongoose will manage all utilities behind the scenes for us.
 // We can use same connection that we have created below in all other files

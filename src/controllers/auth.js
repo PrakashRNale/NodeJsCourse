@@ -150,7 +150,8 @@ exports.postResetPasswordEmail = (req , res , next) =>{
         let token = buffer.toString('hex');
         User.findOne({email : email}).then(user => {
             if(!user){
-                res.redirect('/reset-password');
+               // throw new Error('User not found');
+               return res.redirect('/reset-password');
             }
     
             user.resetToken = token;
@@ -170,6 +171,10 @@ exports.postResetPasswordEmail = (req , res , next) =>{
               sendMail(mailOptions);
               res.redirect('/reset');
         }).catch(err =>{
+            console.log('catch');
+            const error = new Error(err);
+            error.httpStatus = 500;
+            return next(error);
             console.log(err);
         })
     })
