@@ -11,15 +11,28 @@ exports.getAddProduct = (req , res , next) => {
 exports.postAddProduct = (req , res , next) => {
     debugger; 
     // let product = new Product(req.body.title , req.body.price , null , req.user._id);
+    let image = req.file;
+    if(!image){
+        return res.status(422).render('add-product',{
+            pageTitle : 'Add Porduct',
+            path :'/admin/add-product',
+            formCss : true
+        })
+    }
+    
+    let imageUrl = image.path;
+    console.log(imageUrl);
     let product = new Product({
         title : req.body.title,
         price : req.body.price,
+        imageUrl : imageUrl,
         userId : req.user.id  // here even if we do like userId : user , mongoose will assigne only user._id to this ref
     })
     product.save().then(() =>{
         res.redirect('/'); // status code will be automatically get attched to it
     }).catch(err =>{
-        console.log(err)
+        console.log(err);
+        return next(err);
     });
 }
 
