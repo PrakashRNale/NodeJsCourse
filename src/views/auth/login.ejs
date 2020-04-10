@@ -29,14 +29,17 @@
     </header>
    
     <main>
-        <form class="product-form" action="/login" method="POST">
+        <form class="product-form" action="/login" method="POST" novalidate>
+            <% if(errorMessage) { %>
+                <p><%= errorMessage %></p>
+            <% } %>
             <div class="form-control">
                 <label for="email">Email</label>
-                <input id="email" type="email" name="email" />
+                <input id="email" type="email" name="email" value="<%= oldInput.email %>" />
             </div>
             <div class="form-control">
                 <label for="password">Password</label>
-                <input id="password" type="password" name="password" />
+                <input id="password" type="password" name="password" value="<%= oldInput.password %>" />
             </div>
             <button type="submit">Login</button>
             <a href="/reset-password">Reset Password</a>

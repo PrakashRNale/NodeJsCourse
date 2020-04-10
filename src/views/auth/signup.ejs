@@ -29,19 +29,21 @@
     </header>
    
     <main>
-        <form class="product-form" action="/signup" method="POST">
-            
+        <form class="product-form" action="/signup" method="POST" novalidate>
+            <% if(errorMessage) { %>
+                <p><%= errorMessage %></p>
+            <% } %>
             <div class="form-control">
                 <label for="email">Email</label>
-                <input id="email" type="email" name="email" />
+                <input id="email" type="email" name="email" value="<%= oldInput.email %>" />
             </div>
             <div class="form-control">
                 <label for="password">Password</label>
-                <input id="password" type="password" name="password" />
+                <input id="password" type="password" name="password" value="<%= oldInput.password %>" />
             </div>
             <div class="form-control">
                 <label for="confirmPassword">Confirm Password</label>
-                <input id="confirmPassword" type="password" name="confirmPassword" />
+                <input id="confirmPassword" type="password" name="confirmPassword" value="<%= oldInput.confirmPassword %>" />
             </div>
             <button type="submit">Signup</button>
         </form>

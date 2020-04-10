@@ -1,21 +1,46 @@
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 const crypto  = require('crypto');
+const { validationResult } = require('express-validator');
 
 const sendMail = require("../util/mail");
 exports.login = (req , res , next) =>{
     console.log('in login view ');
     res.render('auth/login',{
-        pageTitle : 'Login'
+        pageTitle : 'Login',
+        errorMessage : '',
+        oldInput : {
+            email : '',
+            password : ''
+        }
     })
 }
 
 exports.postLogin = (req , res , next) =>{
     // res.setHeader('Set-Cookie','loggedIn:true');
     let {email , password} = req.body;
+    let errors = validationResult(req);
+    //validationResult function actually collects all errors that it get from check or body methods in route
+    if(!errors.isEmpty()){
+        res.render('auth/login',{
+            pageTitle : 'Login',
+            errorMessage : errors.array()[0].msg,
+            oldInput : {
+                email : email,
+                password : password
+            }
+        })
+    }
     User.findOne({email : email}).then(userDoc =>{
         if(!userDoc){
-            return res.redirect('/login');
+            res.render('auth/login',{
+                pageTitle : 'Login',
+                errorMessage : 'Invalid Email or Password',
+                oldInput : {
+                    email : email,
+                    password : password
+                }
+            });
         }
         bcrypt.compare(password , userDoc.password).then(doPasswordMatch =>{
             if(doPasswordMatch){
@@ -26,7 +51,14 @@ exports.postLogin = (req , res , next) =>{
                     res.redirect('/');
                 })
             }
-            res.redirect('/login');
+            res.render('auth/login',{
+                pageTitle : 'Login',
+                errorMessage : 'Invalid Email or Password',
+                oldInput : {
+                    email : email,
+                    password : password
+                }
+            });
         }).catch(err =>{
             res.redirect('/login');
         })
@@ -45,13 +77,32 @@ exports.postLogout = (req , res , next) =>{
 exports.singup = (req , res , next) =>{
     console.log('in signup');
     res.render('auth/signup',{
-        pageTitle : 'Signup' 
+        pageTitle : 'Signup' ,
+        errorMessage  : '',
+        oldInput : {
+            email : '',
+            password : '',
+            confirmPassword : ''
+        }
     })
 }
 
 exports.postSingup = (req , res , next) =>{
-    
     let {email , password} = req.body;
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+        console.log(errors.array());
+        return res.render('auth/signup',{
+            pageTitle : 'Signup' ,
+            errorMessage : errors.array()[0].msg,
+            oldInput : {
+                email : email,
+                password : password,
+                confirmPassword : req.body.confirmPassword
+            }
+        });
+    }
+    
     User.findOne({email : email}).then(userDoc =>{
         if(userDoc){
             return res.redirect('/signup');
@@ -99,7 +150,8 @@ exports.postResetPasswordEmail = (req , res , next) =>{
         let token = buffer.toString('hex');
         User.findOne({email : email}).then(user => {
             if(!user){
-                res.redirect('/reset-password');
+               // throw new Error('User not found');
+               return res.redirect('/reset-password');
             }
     
             user.resetToken = token;
@@ -119,6 +171,10 @@ exports.postResetPasswordEmail = (req , res , next) =>{
               sendMail(mailOptions);
               res.redirect('/reset');
         }).catch(err =>{
+            console.log('catch');
+            const error = new Error(err);
+            error.httpStatus = 500;
+            return next(error);
             console.log(err);
         })
     })
