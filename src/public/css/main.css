@@ -52,11 +52,13 @@ body{
   .card {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
     margin-top: 20px;
+    max-width: 300px;
   }
   
   .card__header,
   .card__content {
     padding: 1rem;
+    text-align: center;
   }
   
   .card__header h1,
@@ -68,10 +70,12 @@ body{
   
   .card__image {
     width: 100%;
+    height: 200px;
   }
   
   .card__image img {
     width: 100%;
+    height: 200px;
   }
   .card__actons-group{
     display: flex;
@@ -102,3 +106,23 @@ body{
     color: white;
   }
   
+
+  .pagination{
+    margin : 10px 0;
+    display: flex;
+    justify-content: center;
+  }
+
+  .pagination a{
+    margin-left: 10px;
+  }
+
+  .pagination a.active{
+    background-color: #6c6ee2;
+    color : white;
+  }
+
+  .pagination a:hover{
+    background-color: #6c6ee2;
+    color : white;
+  }
