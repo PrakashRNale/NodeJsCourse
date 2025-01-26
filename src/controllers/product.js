@@ -3,6 +3,8 @@ const path = require('path');
 
 const Product = require('../models/product');
 const mongodb = require('mongodb');
+
+const ITEMS_PER_PAGE = 2;
 exports.getAddProduct = (req , res , next) => {
     res.render('add-product',{ 
         pageTitle : 'Add Porduct',
@@ -49,12 +51,24 @@ exports.getAdminProducts = (req , res , next) =>{
 }
 
 exports.getProducts = (req , res , next) => {
-    Product.find().then((result) =>{
+    let page = +req.query.page || 1;
+    let totalItems;
+    Product.find().countDocuments().then(totalDocs =>{
+        totalItems = totalDocs;
+        console.log('total '+totalItems);
+        return Product.find().skip((page - 1) * ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE);
+    }).then((result) =>{
         console.log(JSON.stringify(result));
         res.render('shop',{
             pageTitle : 'Product List' , 
-            prods : result
-            
+            prods : result,
+            currPage : page,
+            totalCount : totalItems ,
+            hasNextPage : ITEMS_PER_PAGE * page < totalItems,
+            hasPreviousPage : page > 1,
+            nextPage : page + 1,
+            previousPage : page -1,
+            lastPage : Math.ceil(totalItems / ITEMS_PER_PAGE)
         });
     }).catch(err =>{
         console.log(err);

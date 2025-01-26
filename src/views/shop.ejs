@@ -56,10 +56,26 @@
                         </div>
                     </article>
                 <% } %>
+                
             </div>
         <% } else { %>
             <h1>No Products Found!</h1>
         <% } %>
     </main>
+    <section class="pagination">
+        <% if (previousPage !=  1 && currPage != 1) { %>
+            <a href="?page=1">First </a>
+        <% } %>
+        <% if (previousPage !=  currPage && previousPage > 0) { %>
+            <a href="?page=<%= previousPage %>"><%= previousPage %></a>
+        <% } %>
+        <a class="active"  href="?page=<%= currPage %>"><%= currPage %></a>
+        <% if (nextPage !=  currPage && hasNextPage) { %>
+            <a href="?page=<%= nextPage %>"><%= nextPage %></a>
+        <% } %>
+        <% if (lastPage !=  currPage && lastPage != nextPage) { %>
+            <a href="?page=<%= lastPage %>">Last </a>
+        <% } %>
+    </section>
 </body>
 </html>
